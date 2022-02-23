@@ -2,8 +2,7 @@ def check_coordinates(*args):
     """ check coordinates on positive int
     """
     for item in args:
-        print(item[0].type())
-        if item[0].type() == 'int' and item[0] >= 0 and item[1].type() == 'int' and item[1] >= 0:
+        if type(item[0]) == int and item[0] > 0 and type(item[1]) == int and item[1] > 0:
             return True
         else:
             raise ValueError('uncorrect coordinate! it must be positive int')
@@ -14,21 +13,34 @@ def draw_point(c1, grid = None):
     check_coordinates(c1)
     if grid == None:
         grid = set()
-    return grid.add(c1)
+    if len(c1) == 2:
+        c1 += ("#",)
+    grid.add(c1)
+    return grid
+
 
 def grid_to_str(grid):
-    out = [" ",]
+    """
+    """
+    out = [[' ']]
     out_=""
     for i in grid:
         y = i[1]
         x = i[0]
-        if len(out) < y:
-            out += ' ' * (y - len(out))
-        if out[y].len() < x:
-            out[y]+=' ' * (x - len(out[y]))
+        while len(out) < y:
+            # add lines
+            out += [[" "]]
 
-        out[y][x] = i[3] or '#'
-        out[y] += ' '
+        # print(i)
+        # print(len(out[y-1]))
+        if len(out[y-1]) < x:
+            # add x pos in line
+            out[y-1] += [' '] * (x - len(out[y-1]))
+        out[y-1][x-1] = i[2]
 
     for i in out:
-        out_ += i + '\n'
+        for j in i:
+            out_ += j
+        else:
+            out_ += '\n'
+    return out_

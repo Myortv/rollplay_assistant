@@ -1,7 +1,21 @@
 import unittest
 import timeit
-# from formater_new import
+
+import formater as f
 
 
-class TestNewFormaterMethods(unittest.TestCase):
-    def test_(self):
+
+
+
+class TestFormater(unittest.TestCase):
+    def test_draw_point(self):
+        self.assertEqual(
+            f.draw_point((1,1)),
+            {(1,1,'#')}
+        )
+
+    def test_draw_point_with_filler(self):
+        self.assertEqual(
+            f.draw_point((25,25,"*")),
+            {(25,25,'*')}
+        )
