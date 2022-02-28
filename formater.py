@@ -6,8 +6,9 @@ def check_coordinates(*args):
         # checking len of coordinate and add '#' if needed
         if len(item) == 2:
             item += ("#", )
-        else:
-            raise ValueError ('uncorrect coordinate given! it supposed to have 2 or 3 elements.')
+        elif len(item) != 3:
+            raise ValueError ('\n\n\tuncorrect coordinate given!'+
+                ' it supposed to have 2 or 3 elements.\n')
         # checking type of cioordinate items
         if (type(item[0]) == int and
                 item[0] > 0 and
@@ -15,7 +16,8 @@ def check_coordinates(*args):
                 item[1] > 0):
                 out.append(item)
         else:
-            raise ValueError('uncorrect coordinate given! its supposed to be positive int.')
+            raise ValueError('\n\n\tuncorrect coordinate given!'+
+            ' its supposed to be positive int.\n')
     # return the only one value, if thise possible
     if len(out) == 1:
         return out[0]
@@ -46,8 +48,8 @@ def draw_line(c1, c2, grid = None):
     y = c1[1]
     # math constant
         # Ax + Bx + C = 0  -- общее уравнение прямой
-        # (y1 - y2)x + (x2 - x1) y + (x1y2 - x2y1) = 0 -- каноническое уравнение
-        # приведённое к виду общего уравнения
+        # (y1 - y2)x + (x2 - x1) y + (x1y2 - x2y1) = 0 -- каноническое
+        # уравнение приведённое к виду общего уравнения
         # x = -(By + C)/ A
         # y = -(Ax + C)/ B
     A = Y1 - Y2
@@ -87,7 +89,7 @@ def draw_line(c1, c2, grid = None):
 def assembly(grid):
     """ compile values from dict to string by lists
     """
-    # variables for dict-list and list-str conversion list needed to save state
+    #variables for dict-list and list-str conversion list needed to save state
     out = [[' ']]
     out_ = ""
     # going through grid coordinates to make list
@@ -102,18 +104,82 @@ def assembly(grid):
             out[y-1] += [' '] * (x - len(out[y-1]))
         # add char from greed
         out[y-1][x-1] = grid[i]
-    # convert list to string
+    # temp variables for converting
     tmp = ""
     tmp2 = ""
+    # convert list to string
     for i in out:
         tmp = tmp2.join(i)
         out_ += tmp + '\n'
     return out_
 
-def draw_text_block(c1, c2, text, wrapping = True, grid = None ):
+def draw_text_container(c1, c2, text, wrapping = True, grid = None ):
     """ input text in rectangle block with 2 coordinates - upper left corner
         and upper rigth corner. wrap words in default
     """
-    splited = tuple(text.split(" "))
-    for i in range(c1[1], c2[1]+1):
-        pass
+    # raise error if wrong input
+    if c1[0] == c2[0]:
+        raise ValueError('\n\n\tYour text block can\'t have zero length!\n')
+    c1, c2 = check_coordinates(c1,c2)
+    if grid == None:
+        grid = {}
+    # flips coordinates, if c1 is right corner instead be left corner
+    if c1 > c2:
+        c1, c2 = c2, c1
+    # carriage coordinates
+    x = c1[0]
+    y = c1[1]
+    splited = list(text.split(" "))
+    container = c2[0] - c1[0] + 1
+    for word in splited:
+        # carriage wrap if needed
+        # if word bigger then container, do nothing
+        if len(word) > c2[0] - x + 1  and len(word) <= container:
+            y += 1
+            x = c1[0]
+
+        # new string
+        if word == "\n":
+            y += 1
+            x = c1[0]
+            continue
+        # tabulation if enough space
+        elif word == "\t" and c2[0] - x + 1 >= 4:
+            for i in range(0,4):
+                grid.update([( (x+i,y), " " )])
+            x += 4
+            continue
+        # tabulation if not enough space
+        elif word == "\t" and not c2[0] - x + 1 >= 4:
+            y += 1
+            for i in range(0,4):
+                grid.update([( (x+i,y), " " )])
+            x = c1[0]
+            continue
+        # word if words length less or equal container
+        elif len(word) <= container:
+            for j in range(0,len(word)):
+                grid.update([( (x,y), word[j] )])
+                x += 1
+        # word if words longer than container
+        elif len(word) > container:
+            # divade word into parts
+            parts = [word[:c2[0]-x:]]
+            word = word[c2[0]-x:]
+            while len(word) > container:
+                parts += [word[:container]]
+                word = word[container:]
+            if len(word) >= 1:
+                parts += [word]
+            for part in parts:
+                for char in part:
+                    grid.update([( (x,y), char )])
+                    x += 1
+                x = c1[0]
+                y += 1
+        # add " " after word. skipped, if word is special char
+        if x != c2[0]:
+            grid.update([( (x,y), " " )])
+            x +=1
+
+    return grid
