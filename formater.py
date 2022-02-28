@@ -54,7 +54,7 @@ def draw_line(c1, c2, grid = None):
     B = X2 - X1
     C = X1 * Y2 - X2 * Y1
     # script calculates variables through x
-    while x != X2:
+    while y != Y2:
         try:
             x = round( -(B * y + C)/ A )
         except ZeroDivisionError:
@@ -69,7 +69,7 @@ def draw_line(c1, c2, grid = None):
     x = c1[0]
     y = c1[1]
     # script calculates coordinates through y
-    while y != Y2:
+    while x != X2:
         try:
             y = round( -(A * x + C )/ B)
         except ZeroDivisionError:
@@ -81,7 +81,7 @@ def draw_line(c1, c2, grid = None):
         else:
             x -= 1
     # drawing endpoint
-    grid = _draw_point((X2,Y2,c1[2]), grid)
+    grid.update([( (X2,Y2), c1[2] )])
     return grid
 
 def assembly(grid):
@@ -110,4 +110,10 @@ def assembly(grid):
         out_ += tmp + '\n'
     return out_
 
-print(assembly(draw_line((1,1), (44,10))))
+def draw_text_block(c1, c2, text, wrapping = True, grid = None ):
+    """ input text in rectangle block with 2 coordinates - upper left corner
+        and upper rigth corner. wrap words in default
+    """
+    splited = tuple(text.split(" "))
+    for i in range(c1[1], c2[1]+1):
+        pass
