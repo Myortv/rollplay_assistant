@@ -3,10 +3,6 @@ import timeit
 
 import formater as f
 
-
-
-
-
 class TestFormater(unittest.TestCase):
     def test_draw_point(self):
         self.assertEqual(
