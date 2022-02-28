@@ -6,7 +6,11 @@ def check_coordinates(*args):
         # checking len of coordinate and add '#' if needed
         if len(item) == 2:
             item += ("#", )
-        elif len(item) != 3:
+        # checking type and length of filler
+        if len(item) == 3:
+            if len(item[2]) != 1 or type(item[2]) != str:
+                raise ValueError('\n\n\tIncorrect filler.\n')
+        else:
             raise ValueError ('\n\n\tuncorrect coordinate given!'+
                 ' it supposed to have 2 or 3 elements.\n')
         # checking type of cioordinate items
@@ -163,9 +167,11 @@ def draw_text_container(c1, c2, text, wrapping = True, grid = None ):
                 x += 1
         # word if words longer than container
         elif len(word) > container:
+                    #  may be it better to rework thise func
             # divade word into parts
             parts = [word[:c2[0]-x:]]
             word = word[c2[0]-x:]
+            # continue divading
             while len(word) > container:
                 parts += [word[:container]]
                 word = word[container:]
@@ -181,5 +187,4 @@ def draw_text_container(c1, c2, text, wrapping = True, grid = None ):
         if x != c2[0]:
             grid.update([( (x,y), " " )])
             x +=1
-
     return grid
